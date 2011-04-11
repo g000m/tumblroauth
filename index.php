@@ -1,12 +1,12 @@
 <?php
 /**
  * @file
- * User has successfully authenticated with Twitter. Access tokens saved to session and DB.
+ * User has successfully authenticated with Tumblr. Access tokens saved to session and DB.
  */
 
 /* Load required lib files. */
 session_start();
-require_once('twitteroauth/twitteroauth.php');
+require_once('tumblroauth/tumblroauth.php');
 require_once('config.php');
 
 /* If access tokens are not available redirect to connect page. */
@@ -16,11 +16,27 @@ if (empty($_SESSION['access_token']) || empty($_SESSION['access_token']['oauth_t
 /* Get user access tokens out of the session. */
 $access_token = $_SESSION['access_token'];
 
-/* Create a TwitterOauth object with consumer/user tokens. */
-$connection = new TwitterOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oauth_token'], $access_token['oauth_token_secret']);
+/* Create a TumblrOauth object with consumer/user tokens. */
+$connection = new TumblrOAuth(CONSUMER_KEY, CONSUMER_SECRET, $access_token['oauth_token'], $access_token['oauth_token_secret']);
 
 /* If method is set change API call made. Test is called by default. */
-$content = $connection->get('account/verify_credentials');
+// $content = $connection->get('account/verify_credentials');
+
+$user = $connection->authenticate();
+$user = simplexml_load_string($user);
+
+$name = (string)$user->tumblelog['name'];
+
+$params = array('start' => 0,
+	'num' => 1);
+
+$read = $connection->read($name, $params);
+$read = simplexml_load_string($read);
+
+$url = (string)$read->posts->post[0]['url-with-slug'];
+
+echo '<strong>Connected via:</strong> ' . $name . '<br />';
+echo '<strong>Last post:</strong> <a href="' . $url . '">' . $url . '</a>';
 
 /* Some example calls */
 //$connection->get('users/show', array('screen_name' => 'abraham')));

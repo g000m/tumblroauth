@@ -1,24 +1,26 @@
 <?php
 
 /*
- * Abraham Williams (abraham@abrah.am) http://abrah.am
+ * Jacob Budin (me@jbud.in) http://jbud.in
  *
- * The first PHP Library to support OAuth for Twitter's REST API.
+ * A PHP Library to support OAuth for Tumblr's REST API, forked from Arbraham William's Twitter OAuth class.
  */
 
 /* Load OAuth lib. You can find it at http://oauth.net */
 require_once('OAuth.php');
 
 /**
- * Twitter OAuth class
+ * Tumblr OAuth class
  */
-class TwitterOAuth {
+class TumblrOAuth {
   /* Contains the last HTTP status code returned. */
   public $http_code;
   /* Contains the last API call. */
   public $url;
   /* Set up the API root URL. */
-  public $host = "https://api.twitter.com/1/";
+  public $host = "http://www.tumblr.com/api/";
+  /* Set up the API root URL for reading (%USER equals username). */
+  public $host_read = "http://%USER.tumblr.com/api/";
   /* Set timeout default. */
   public $timeout = 30;
   /* Set connect timeout. */
@@ -26,13 +28,13 @@ class TwitterOAuth {
   /* Verify SSL Cert. */
   public $ssl_verifypeer = FALSE;
   /* Respons format. */
-  public $format = 'json';
+  public $format = 'xml';
   /* Decode returned json data. */
   public $decode_json = TRUE;
   /* Contains the last HTTP headers returned. */
   public $http_info;
   /* Set the useragnet. */
-  public $useragent = 'TwitterOAuth v0.2.0-beta2';
+  public $useragent = 'TumblrOAuth v0.2.0-beta2';
   /* Immediately retry the API call if the response was not successful. */
   //public $retry = TRUE;
 
@@ -42,10 +44,10 @@ class TwitterOAuth {
   /**
    * Set API URLS
    */
-  function accessTokenURL()  { return 'https://api.twitter.com/oauth/access_token'; }
-  function authenticateURL() { return 'https://twitter.com/oauth/authenticate'; }
-  function authorizeURL()    { return 'https://twitter.com/oauth/authorize'; }
-  function requestTokenURL() { return 'https://api.twitter.com/oauth/request_token'; }
+  function accessTokenURL()  { return 'http://www.tumblr.com/oauth/access_token'; }
+  function authenticateURL() { return 'http://www.tumblr.com/oauth/authorize'; }
+  function authorizeURL()    { return 'http://www.tumblr.com/oauth/authorize'; }
+  function requestTokenURL() { return 'http://www.tumblr.com/oauth/request_token'; } 
 
   /**
    * Debug helpers
@@ -54,7 +56,7 @@ class TwitterOAuth {
   function lastAPICall() { return $this->last_api_call; }
 
   /**
-   * construct TwitterOAuth object
+   * construct TumblrOAuth object
    */
   function __construct($consumer_key, $consumer_secret, $oauth_token = NULL, $oauth_token_secret = NULL) {
     $this->sha1_method = new OAuthSignatureMethod_HMAC_SHA1();
@@ -68,7 +70,7 @@ class TwitterOAuth {
 
 
   /**
-   * Get a request_token from Twitter
+   * Get a request_token from Tumblr
    *
    * @returns a key/value array containing oauth_token and oauth_token_secret
    */
@@ -88,11 +90,11 @@ class TwitterOAuth {
    *
    * @returns a string
    */
-  function getAuthorizeURL($token, $sign_in_with_twitter = TRUE) {
+  function getAuthorizeURL($token, $sign_in_with_tumblr = TRUE) {
     if (is_array($token)) {
       $token = $token['oauth_token'];
     }
-    if (empty($sign_in_with_twitter)) {
+    if (empty($sign_in_with_tumblr)) {
       return $this->authorizeURL() . "?oauth_token={$token}";
     } else {
        return $this->authenticateURL() . "?oauth_token={$token}";
@@ -173,11 +175,55 @@ class TwitterOAuth {
   }
 
   /**
+   * AUTHENTICATE wrapper for POST.
+   */
+	function authenticate(){
+		return $this->post('authenticate');
+	}
+	
+	/**
+   * READ wrapper for POST.
+   */
+	function read($user, $params){
+		$host = $this->host;
+		$this->host = str_replace('%USER', $user, $this->host_read);
+		$return = $this->post('read', $params);
+		$this->host = $host;
+		return $return;
+	}
+	
+	/**
+   * DASHBOARD wrapper for POST.
+   */
+	function dashboard($params){
+		return $this->post('dashboard', $params);
+	}
+	
+	/**
+   * PAGES wrapper for POST.
+   */
+	function pages($params){
+		return $this->post('pages', $params);
+	}
+	
+	/**
+   * WRITE wrapper for POST.
+   */
+	function write($params){
+		return $this->post('write', $params);
+	}
+
+  /**
    * Format and sign an OAuth / API request
    */
   function oAuthRequest($url, $method, $parameters) {
     if (strrpos($url, 'https://') !== 0 && strrpos($url, 'http://') !== 0) {
-      $url = "{$this->host}{$url}.{$this->format}";
+		if($this->format == 'xml'){
+	      $url = "{$this->host}{$url}";
+		}
+		else{
+			$url = "{$this->host}{$url}/{$this->format}";
+		}
     }
     $request = OAuthRequest::from_consumer_and_token($this->consumer, $this->token, $method, $url, $parameters);
     $request->sign_request($this->sha1_method, $this->consumer, $this->token);
