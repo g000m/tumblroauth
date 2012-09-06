@@ -1,3 +1,7 @@
+As of September 1, 2012, Tumblr has disabled access to the v1 API. This code is no longer functional, and the project longer being maintained.
+
+
+
 Jacob Budin | me@jbud.in | http://jbud.in | @jacobbudin
 
 A PHP Library to support OAuth for Tumblr's REST API, forked from Arbraham William's Twitter OAuth class.
