@@ -1,18 +1,15 @@
-As of September 1, 2012, Tumblr has disabled access to the v1 API. This code is no longer functional, and the project longer being maintained.
-
-
-
-Jacob Budin | me@jbud.in | http://jbud.in | @jacobbudin
-
 A PHP Library to support OAuth for Tumblr's REST API, forked from Arbraham William's Twitter OAuth class.
 
 Key differences:
 - Connects to Tumblr, not Twitter.
-- Outputs XML only.
+- Outputs JSON only.
 - Added Tumblr-specific built-in methods: 
 	authenticate(), read($user, $params), dashboard($params), pages($params), write($params)
 
-Documentation: http://github.com/jacobbudin/tumblroauth/documentation 
-Source: http://github.com/jacobbudin/tumblroauth
-Tumblr: http://www.tumblr.com/docs/en/api
+- Now supports all API_KEY requests as well as OAuth so you can use one common library to perform any
+       API call.
+
+Documentation: http://github.com/dwbrand/tumblroauth/documentation 
+Source: http://github.com/dwbrand/tumblroauth
+Tumblr: http://www.tumblr.com/docs/en/api/v2
 Tumblr OAuth: http://www.tumblr.com/oauth/apps
