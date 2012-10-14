@@ -27,7 +27,6 @@ if(!isset($_GET['test'])){
 }
 else{
 	$user = $connection->authenticate();
-	$user = simplexml_load_string($user);
 
 	$name = (string)$user->tumblelog['name'];
 
@@ -35,7 +34,6 @@ else{
 		'num' => 1);
 
 	$read = $connection->read($name, $params);
-	$read = simplexml_load_string($read);
 
 	$url = (string)$read->posts->post[0]['url-with-slug'];
 
