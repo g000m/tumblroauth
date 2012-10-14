@@ -1,9 +1,12 @@
 <?php
 
 /*
+ * Modifications: DWBrand (support@dwbrand.net) http://dwbrand.net
+ * Modifications: Jacob Budin (me@jbud.in) http://jbud.in
  * Abraham Williams (abraham@abrah.am) http://abrah.am
  *
- * The first PHP Library to support OAuth for Tumblr's REST API.  (Originally for Twitter, modified for Tumblr by Lucas)
+ * The first PHP Library to support OAuth and APIKey requests to Tumblr's
+ * REST API.  (Originally for Twitter, modified for Tumblr)
  */
 
 /* Load OAuth lib. You can find it at http://oauth.net */
@@ -187,14 +190,59 @@ class TumblrOAuth {
   }
 
   /**
+   * AUTHENTICATE wrapper for POST.
+   */
+  function authenticate(){
+		return $this->post('authenticate');
+	}
+	
+	/**
+   * READ wrapper for POST.
+   */
+	function read($user, $params){
+		$host = $this->host;
+		$this->host = str_replace('%USER', $user, $this->host_read);
+		$return = $this->post('read', $params);
+		$this->host = $host;
+		return $return;
+	}
+	
+	/**
+   * DASHBOARD wrapper for POST.
+   */
+	function dashboard($params){
+		return $this->post('dashboard', $params);
+	}
+	
+	/**
+   * PAGES wrapper for POST.
+   */
+	function pages($params){
+		return $this->post('pages', $params);
+	}
+	
+	/**
+   * WRITE wrapper for POST.
+   */
+	function write($params){
+		return $this->post('write', $params);
+	}
+
+  /**
    * Format and sign an OAuth / API request
    */
   function oAuthRequest($url, $method, $parameters) {
     if (strrpos($url, 'https://') !== 0 && strrpos($url, 'http://') !== 0) {
-      $url = "{$this->host}{$url}";
+      if($this->format == 'xml'){
+        $url = "{$this->host}{$url}";
+      } else {
+        $url = "{$this->host}{$url}/{$this->format}";
+      }
     }
+
     $request = OAuthRequest::from_consumer_and_token($this->consumer, $this->token, $method, $url, $parameters);
     $request->sign_request($this->sha1_method, $this->consumer, $this->token);
+    
     switch ($method) {
     case 'GET':
       return $this->http($request->to_url(), 'GET');
