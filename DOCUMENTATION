@@ -5,10 +5,10 @@ TumblrOAuth documentation.
 GET THE CODE
 ====================
 You can pull the latest development version using git:
-git clone git://github.com/jacobbudin/tumblroauth.git
+git clone git://github.com/dwbrand/tumblroauth.git
 
 Or you can download the latest release by visiting:
-http://github.com/jacobbudin/tumblroauth/downloads
+http://github.com/dwbrand/tumblroauth/downloads
 
 
 FLOW OVERVIEW
@@ -42,7 +42,7 @@ There are a number of parameters you can modify after creating a TumblrOAuth obj
 Custom useragent:
 $connection->useragent = 'Custom useragent string';
 
-Verify TumblrÕs SSL certificate:
+Verify Tumblr's SSL certificate:
 $connection->ssl_verifypeer = TRUE;
 
 There are several more you can find in TumblrOAuth.php.
