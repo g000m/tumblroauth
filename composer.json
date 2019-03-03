@@ -1,0 +1,12 @@
+{
+    "name": "g000m/tumblroauth",
+    "type": "library",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Gabe Herbert",
+            "email": "gh@gabeherbert.com"
+        }
+    ],
+    "require": {}
+}
